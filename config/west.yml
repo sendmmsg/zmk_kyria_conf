@@ -1,11 +1,11 @@
 manifest:
   remotes:
     - name: zmkfirmware
-      url-base: https://github.com/zmkfirmware
+      url-base: https://github.com/cbc-mkb
   projects:
     - name: zmk
       remote: zmkfirmware
-      revision: main
+      revision: mouse-pim447
       import: app/west.yml
   self:
     path: config

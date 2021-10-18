@@ -6,25 +6,133 @@
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
+#include "swedish_keys.h"
+
+#define BASE       0
+#define MOUSE      1
+#define MOVEMENT   2
+#define BRACKETS   3
+#define SYMBOLS    4
+#define NUMBERS    5
+#define FNUMBERS   6
+
+// kyriaL
+// bt addr E1:D8:2A:8C:D5:C8
+// kyriaR
+// bt addr F0:04:13:99:D9:D6
+
 
 / {
-	keymap {
-		compatible = "zmk,keymap";
 
-		default_layer {
-// ---------------------------------------------------------------------------------------------------------------------------------
-// |  ESC  |  Q  |  W  |  E   |  R   |  T   |                                          |  Y   |  U    |  I    |  O   |   P   |   \  |
-// |  TAB  |  A  |  S  |  D   |  F   |  G   |                                          |  H   |  J    |  K    |  L   |   ;   |   '  |
-// | SHIFT |  Z  |  X  |  C   |  V   |  B   | L SHIFT | L SHIFT |  | L SHIFT | L SHIFT |  N   |  M    |  ,    |  .   |   /   | CTRL |
-//                     | GUI  | DEL  | RET  |  SPACE  |   ESC   |  |   RET   |  SPACE  | TAB  | BSPC  | R-ALT |
-			bindings = <
-	&kp ESC   &kp Q &kp W &kp E &kp R &kp T                                                &kp Y &kp U  &kp I     &kp O   &kp P    &kp BSLH
-	&kp TAB   &kp A &kp S &kp D &kp F &kp G                                                &kp H &kp J  &kp K     &kp L   &kp SEMI &kp SQT
-	&kp LSHFT &kp Z &kp X &kp C &kp V &kp B &kp LSHFT &kp LSHFT        &kp LSHFT &kp LSHFT &kp N &kp M  &kp COMMA &kp DOT &kp FSLH &kp RCTRL
-	                 &kp LGUI &kp DEL &kp RET &kp SPACE &kp ESC        &kp RET  &kp SPACE  &kp TAB &kp BSPC &kp RALT
-			>;
+  behaviors {
+        // Customized mod_tap and layer_tap:
+        // - Enables quick_tap. Useful for backspace/space.
+        // - Switch to balanced flavor to allow for fast (back)space + character rollovers.
+        hr: custom_mod_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "HOMEROW_MODS";
+            #binding-cells = <2>;
+            tapping-term-ms = <150>;
+            quick_tap_ms = <0>;
+            flavor = "tap-preferred";
+            bindings = <&kp>, <&kp>;
+        };
+        lt_: custom_layer_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "LAYER_TAP";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <150>;
+            quick_tap_ms = <500>;
+            bindings = <&mo>, <&kp>;
+        };
+    };
+    keymap {
+        compatible = "zmk,keymap";
+/*
+ * Base Layer: QWERTY 
+ *
+ * ,-------------------------------------------.                              ,-------------------------------------------.
+ * | TAB    |   Q  |   W  |   E  |   R  |   T  |                              |   Y  |   U  |   I  |   O  |   P  |   Å    |
+ * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
+ * |LGUI/ESC|ALT/A |SHFT/S|  D   |   F  |   G  |                              |   H  |   J  |   K  |   L  |   Ö  |   Ä    |
+ * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
+ * | Ctrl/BS|   Z  |   X  |   C  |   V  |   B  |DVORAK|QWERTY|  | GAME |ADJUST|   N  |   M  |   ,  |   .  |    ? |  <--   |
+ * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+ *                        | GUI  | Del  | Space|  <-- | Esc  |  | Enter| Space| Tab  | Bksp | AltGr|
+ *                        |      |      |      |      |      |  | Lower| Raise|      |      |      |
+ *                        `----------------------------------'  `----------------------------------'
+ */
 
-			sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
-		};
-	};
+
+        qwerty_layer {
+            bindings = <
+    &kp TAB         &kp Q   &lt SYMBOLS W &kp E         &kp R      &kp T                                            &kp Y   &kp U      &kp I       &kp O      &kp P              &kp SE_AO
+    &hr LGUI ESC    &kp A   &hr LALT S    &hr LSHFT D   &hr LCTL F &lt_ NUMBERS G                                    &kp H   &hr LCTL J &hr LSHFT K &hr LALT L &lt_ BRACKETS SE_OE &kp SE_AE
+    &mt LCTL BSPC   &kp Z   &kp X         &kp C         &kp V      &kp B &kp SE_LBRC &to MOUSE &trans  &kp SE_RBRC  &kp N   &kp M      &kp COMMA   &kp DOT    &kp FSLH           &kp BSPC
+                                       &kp LGUI &kp DEL &kp SPACE  &kp BSPC &lt SYMBOLS ESC                         &mo FNUMBERS &lt_ MOVEMENT DEL    &kp RET       &kp BSPC    &kp RALT
+            >;
+            sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN>;
+
+        };
+
+        mouse_layer {
+                        bindings = <
+    &trans &trans &trans &trans &kp PG_UP   &trans                                          &trans     &trans   &kp UP     &trans &trans &trans
+    &trans &trans &trans &trans &kp PG_DN   &trans                                          &kp BSPC   &kp LEFT &kp DOWN   &kp RIGHT  &kp DEL &trans
+    &trans &trans &trans &trans &trans  &trans       &trans      &trans &trans &trans   &kp C_STOP &kp C_PP &kp C_PREV &kp C_NEXT &trans &trans
+                                     &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN>;
+        };
+
+        movement_layer {
+                        bindings = <
+    &trans &trans &trans &trans &kp PG_UP   &trans                                          &trans     &trans   &kp UP     &trans &trans &trans
+    &trans &trans &trans &trans &kp PG_DN   &trans                                          &kp BSPC   &kp LEFT &kp DOWN   &kp RIGHT  &kp DEL &trans
+    &trans &trans &trans &trans &trans  &trans       &trans      &trans &trans &trans   &kp C_STOP &kp C_PP &kp C_PREV &kp C_NEXT &trans &trans
+                                     &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN>;
+        };
+
+        brackets_layer {
+            bindings = <
+    &trans &kp LS(N1)   &kp SE_DQT  &kp SE_LBRC &kp SE_RBRC &kp SE_LT                                         &kp SE_BLSH  &kp SE_STAR  &kp SE_FLSH &kp DOT     &trans &trans
+    &trans &kp SE_CARET &kp SE_SQT  &kp SE_LPAR &kp SE_RPAR &kp SE_GT                                         &kp SE_EQUAL &kp SE_MINUS &kp SE_UNDS &kp COMMA   &trans &trans
+    &trans &kp SE_DLLR  &kp SE_ACNT &kp SE_LBKT &kp SE_RBKT &kp SE_PIPE &kp SE_LBKT &trans &trans &kp SE_RBKT &kp SE_PLUS  &kp SE_PLUS  &kp SE_SEMI &kp LS(DOT) &trans &trans
+                                     &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
+            >;
+            sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN>;
+        };
+        symbols_layer {
+            bindings = <
+    &trans &trans &trans &kp LS(N3) &kp RA(N4)   &kp LS(N5)                                    &kp LS(N6) &kp LS(N3)  &kp RA(N2) &kp RA(N4) &kp SE_QMARK &trans
+    &trans &trans &trans &kp DEL    &kp SE_TILDE &kp SE_CARET                                  &trans     &kp SE_SEMI &kp LS(DOT)     &kp DOT    &trans &trans
+    &trans &trans &trans &trans     &trans       &trans  &kp SE_LPAR &trans &trans &kp SE_RPAR &trans     &kp SE_PIPE &trans     &trans     &trans &trans
+                                     &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
+            >;
+            sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN>;
+        };
+        numbers_layer {
+            bindings = <
+    &trans &kp N1 &kp N2 &kp N3 &kp N4 &kp N5                                          &kp N6 &kp N7 &kp N8 &kp N9 &kp N0 &trans
+    &trans &trans &trans &trans &trans &trans                                          &kp KP_MINUS &kp N4 &kp N5 &kp N6 &kp COMMA &kp SE_STAR
+    &trans &trans &trans &trans &trans &trans &trans &trans              &trans &trans &kp SE_PLUS &kp N1 &kp N2 &kp N3 &kp DOT &kp SE_FLSH
+                                     &trans &trans &trans &trans &trans  &kp DOT &kp N0 &trans &trans &trans
+            >;
+            sensor-bindings = <&inc_dec_kp PG_UP PG_DN &inc_dec_kp PG_UP PG_DN>;
+        };
+        fnumbers_layer {
+            bindings = <
+    &trans &kp F1 &kp F2 &kp F3 &kp F4 &kp F5                                          &kp F6 &kp F7 &kp F8 &kp F9 &kp F10 &kp F11
+    &trans &trans &trans &trans &trans &trans                                          &trans &kp F4 &kp F5 &kp F6 &trans &kp F12
+    &trans &trans &trans &trans &trans &trans &trans &trans              &trans &trans &trans &kp F1 &kp F2 &kp F3 &trans &trans
+                                     &trans &trans &trans &trans &trans  &trans &trans &trans &trans &trans
+            >;
+        };
+
+    };
 };
