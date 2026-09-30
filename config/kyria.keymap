@@ -46,9 +46,9 @@
             quick_tap_ms = <500>;
             bindings = <&mo>, <&kp>;
         };
-        lt_: custom_layer_tap {
+        lt_: custom_layer_tap_hp {
             compatible = "zmk,behavior-hold-tap";
-            label = "LAYER_TAP";
+            label = "LAYER_TAP_HP";
             #binding-cells = <2>;
             flavor = "hold-preferred";
             tapping-term-ms = <150>;
