@@ -1,6 +1,8 @@
 name: Settings reset
 
-on: workflow_dispatch
+on:
+  push:
+    branches: [settings-reset]
 
 jobs:
   build:
