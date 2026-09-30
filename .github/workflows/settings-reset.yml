@@ -8,12 +8,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: zmkfirmware/zmk-build-arm:stable
+      image: zmkfirmware/zmk-build-arm:3.5
     steps:
       - name: Checkout upstream ZMK
         uses: actions/checkout@v4
         with:
           repository: zmkfirmware/zmk
+          ref: v0.3.0
       - name: West init/update
         run: |
           west init -l app
